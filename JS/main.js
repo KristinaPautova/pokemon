@@ -4,21 +4,37 @@
 // Создать программу - список покемонов.
 
 let ol = document.querySelector(".ul")
-// fetch("https://pokeapi.co/api/v2/pokemon/")
-//     .then((result) => result.json())
-//     .then((data) => {
-//         console.log(data)
-//         data.results.forEach((elem,index) => {
-//             // console.log(elem)
-//             ol.innerHTML +=`<li><button onclick="askPokimon(${index+1})">${elem.name} </button></li>`
-//         });
-//     });
-
-
+let inp = document.querySelector('.search')
+let btnSearch = document.querySelector('.btn_search')
 let mainModal = document.querySelector('.main-modal');
 let div = document.querySelector('.inp-edit');
 let btnCloser = document.querySelector('.btn-closer');
-let btnSave = document.querySelector('.btn-save')
+
+btnSearch.addEventListener('click',() => {
+    mainModal.style.display = 'block';
+    fetch(`https://pokeapi.co/api/v2/pokemon?q=${inp.value}`)
+        .then((result) => result.json())
+        .then((data) => {
+            console.log(data)
+            data.results.forEach((elem,index) =>{
+                if(elem.name === inp.value){
+                    fetch(elem.url)
+                        .then((result) => result.json())
+                        .then((data) => {
+                            // console.log(data)
+                            div.innerHTML = `
+            <div>Имя: ${data.name}</div>
+            <div>Тип: ${data.types[0].type.name}</div>
+            <div>Рост:${data.height}</div>
+            <div>Вес: ${data.weight}</div>
+            <img src="${data.sprites.front_default}" style="  width:200px; height:200px; background-size:cover;" alt="">`
+                        });
+                }
+            })
+
+        });
+})
+
 function askPokimon(index){
     mainModal.style.display = 'block';
     fetch(`https://pokeapi.co/api/v2/pokemon/${index}/`)
@@ -64,7 +80,7 @@ const API = "https://pokeapi.co/api/v2/pokemon/?";
 function render(){
     fetch(`${API}offset=${id}&limit=20`).then((result) => result.json())
         .then((data) => {
-            console.log(data)
+            // console.log(data)
             ol.innerHTML = ''
             data.results.forEach((elem, index) => {
                 ol.innerHTML += `<li><button onclick="askPokimon(${id + index + 1})">${elem.name} </button></li>`
